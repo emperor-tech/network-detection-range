@@ -18,37 +18,39 @@ topology:
     sensor:
       kind: linux
       image: jasonish/suricata:7.0.8
+      cmd: -c /etc/suricata/suricata.yaml -i eth1
       binds:
         - detections/rules/suricata.yaml:/etc/suricata/suricata.yaml:ro
+        - detections/rules/suricata.rules:/var/lib/suricata/rules/suricata.rules:ro
         - pcaps/suricata:/var/log/suricata
     management:
       kind: linux
       image: alpine:3.20
-      exec: ["ip address add 10.61.10.10/27 dev eth1", "ip route add default via 10.61.10.1"]
+      exec: ["ip address add 10.61.10.10/27 dev eth1", "ip route replace default via 10.61.10.1 dev eth1"]
     finance:
       kind: linux
       image: alpine:3.20
-      exec: ["ip address add 10.61.20.10/26 dev eth1", "ip route add default via 10.61.20.1"]
+      exec: ["ip address add 10.61.20.10/26 dev eth1", "ip route replace default via 10.61.20.1 dev eth1"]
     engineering:
       kind: linux
       image: alpine:3.20
-      exec: ["ip address add 10.61.30.10/25 dev eth1", "ip route add default via 10.61.30.1"]
+      exec: ["ip address add 10.61.30.10/25 dev eth1", "ip route replace default via 10.61.30.1 dev eth1"]
     users:
       kind: linux
       image: alpine:3.20
-      exec: ["ip address add 10.61.40.10/24 dev eth1", "ip route add default via 10.61.40.1"]
+      exec: ["ip address add 10.61.40.10/24 dev eth1", "ip route replace default via 10.61.40.1 dev eth1"]
     servers:
       kind: linux
       image: alpine:3.20
-      exec: ["ip address add 10.61.50.10/27 dev eth1", "ip route add default via 10.61.50.1"]
+      exec: ["ip address add 10.61.50.10/27 dev eth1", "ip route replace default via 10.61.50.1 dev eth1"]
     dmz:
       kind: linux
       image: alpine:3.20
-      exec: ["ip address add 10.61.60.10/28 dev eth1", "ip route add default via 10.61.60.1"]
+      exec: ["ip address add 10.61.60.10/28 dev eth1", "ip route replace default via 10.61.60.1 dev eth1"]
     guest:
       kind: linux
       image: alpine:3.20
-      exec: ["ip address add 10.61.70.10/24 dev eth1", "ip route add default via 10.61.70.1"]
+      exec: ["ip address add 10.61.70.10/24 dev eth1", "ip route replace default via 10.61.70.1 dev eth1"]
   links:
     - endpoints: ["core:eth1", "gateway:eth1"]
     - endpoints: ["gateway:eth2", "management:eth1"]

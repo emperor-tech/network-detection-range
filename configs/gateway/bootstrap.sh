@@ -12,7 +12,7 @@ ip address add 10.61.50.1/27 dev eth6
 ip address add 10.61.60.1/28 dev eth7
 ip address add 10.61.70.1/24 dev eth8
 
-ip route add default via 10.61.254.1
+ip route replace default via 10.61.254.1
 
 ip link set eth9 promisc on
 for interface in eth1 eth2 eth3 eth4 eth5 eth6 eth7 eth8; do

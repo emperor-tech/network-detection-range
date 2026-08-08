@@ -1,0 +1,3 @@
+trace id 2bee6f6c inet segmentation forward packet: iif "eth3" oif "eth6" ether saddr aa:c1:ab:41:26:0c ether daddr aa:c1:ab:68:c2:77 ip saddr 10.61.20.10 ip daddr 10.61.50.10 ip dscp cs0 ip ecn not-ect ip ttl 63 ip id 23706 ip protocol tcp ip length 60 tcp sport 34389 tcp dport 443 tcp flags == syn tcp window 56760 
+trace id 2bee6f6c inet segmentation forward rule ip saddr 10.61.20.10 ip daddr 10.61.50.10 meta nftrace set 1 (verdict continue)
+trace id 2bee6f6c inet segmentation forward rule iifname "eth3" oifname "eth6" tcp dport { 443, 5432 } accept comment "finance-to-payroll" (verdict accept)

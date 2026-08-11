@@ -1,1 +1,4 @@
-# Placeholder — detection rules added in Phase 3 (telemetry + policy testing)
+# Any DNS traffic toward the management subnet is inherently anomalous --
+# no zone is ever granted udp/53 access to management, so any occurrence
+# (spoofed source or not) is worth alerting on.
+alert udp any any -> 10.61.10.0/27 53 (msg:"Unauthorized DNS traffic toward management zone - possible spoofed source"; classtype:attempted-recon; sid:1000001; rev:1;)

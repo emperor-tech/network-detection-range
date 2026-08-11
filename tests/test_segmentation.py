@@ -1,4 +1,7 @@
+import time
 from conftest import assert_traffic_hits_rule
+from conftest import send_spoofed_packet, count_suricata_alerts, run_in
+
 
 def test_net03_users_cannot_reach_payroll_db():
     """NET-03: users -> finance, tcp/5432 (payroll db). Expected: deny."""
@@ -166,3 +169,34 @@ def test_net07_management_can_reach_gateway_ssh():
 def test_net08_users_cannot_reach_gateway_ssh():
     """NET-08: users -> network devices (the gateway itself), tcp/22. Expected: deny."""
     assert_traffic_hits_rule("clab-soc-a3-d2-users", "10.61.40.1", 22, "tcp", "NF_INPUT_DENY")
+
+
+
+
+def test_net28_guest_spoofed_source_detected():
+    """NET-28: guest forges a management-range source IP toward management, DNS/udp 53.
+    Expected: both the firewall drop AND a Suricata alert fire."""
+    before_fw = get_rule_counter("NF_SPOOF_GUEST")
+    before_alert = count_suricata_alerts(1000001)
+
+    send_spoofed_packet("clab-soc-a3-d2-guest", "10.61.10.99", "10.61.10.10", 53, protocol="udp")
+    time.sleep(2)  # give Suricata a moment to process and flush eve.json
+
+    after_fw = get_rule_counter("NF_SPOOF_GUEST")
+    after_alert = count_suricata_alerts(1000001)
+
+    assert after_fw > before_fw, "Expected NF_SPOOF_GUEST counter to increase"
+    assert after_alert > before_alert, "Expected a Suricata alert (sid 1000001) to fire"
+
+
+def test_net30_sensor_has_no_routable_address():
+    """NET-30: sensor must never be able to initiate traffic into protected zones.
+    Structural test: the sensor's mirror interface has no IPv4 address assigned at
+    all, so it's incapable of sending routed traffic -- stronger than a firewall
+    rule, since there's no address for return traffic to even target."""
+    result = run_in("clab-soc-a3-d2-sensor", ["ip", "-4", "addr", "show", "eth1"])
+    assert "inet " not in result.stdout, (
+        "Sensor's eth1 unexpectedly has an IPv4 address assigned - this would "
+        "let it participate in routed traffic, breaking the passive-only "
+        "guarantee the brief requires."
+    )

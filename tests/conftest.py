@@ -1,6 +1,8 @@
 import re
 import subprocess
 import time
+import json
+import os
 
 GATEWAY = "clab-soc-a3-d2-gateway"
 
@@ -53,3 +55,29 @@ def assert_traffic_hits_rule(source_container, dest_ip, dest_port, protocol, rul
         f"(before={before}, after={after}) for "
         f"{source_container} -> {dest_ip}:{dest_port}/{protocol}"
     )
+
+def send_spoofed_packet(source_container, spoofed_source_ip, dest_ip, dest_port, protocol="udp"):
+    """Craft one packet with a forged source IP using nping (raw sockets) --
+    plain `nc` always sends from the container's real address and can't do this."""
+    proto_flag = "--udp" if protocol == "udp" else "--tcp"
+    run_in(source_container, [
+        "nping", proto_flag, "-p", str(dest_port),
+        "--source-ip", spoofed_source_ip, "-c", "1", dest_ip,
+    ], timeout=8)
+
+
+def count_suricata_alerts(sid, log_path="pcaps/suricata/eve.json"):
+    """Count how many times a given Suricata signature ID has fired,
+    by reading the mirrored eve.json evidence file directly."""
+    if not os.path.exists(log_path):
+        return 0
+    count = 0
+    with open(log_path) as f:
+        for line in f:
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if event.get("event_type") == "alert" and event.get("alert", {}).get("signature_id") == sid:
+                count += 1
+    return count

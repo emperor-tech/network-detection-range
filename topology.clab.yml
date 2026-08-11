@@ -50,7 +50,10 @@ topology:
     guest:
       kind: linux
       image: alpine:3.20
-      exec: ["ip address add 10.61.70.10/24 dev eth1", "ip route replace default via 10.61.70.1 dev eth1"]
+      exec:
+        - "ip address add 10.61.70.10/24 dev eth1"
+        - "ip route replace default via 10.61.70.1 dev eth1"
+        - "apk add --no-cache nmap"
   links:
     - endpoints: ["core:eth1", "gateway:eth1"]
     - endpoints: ["gateway:eth2", "management:eth1"]

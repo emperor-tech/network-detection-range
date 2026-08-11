@@ -1,6 +1,11 @@
 import time
-from conftest import assert_traffic_hits_rule
-from conftest import send_spoofed_packet, count_suricata_alerts, run_in
+from conftest import (
+	assert_traffic_hits_rule,
+	get_rule_counter, 
+	send_spoofed_packet, 
+	count_suricata_alerts, 
+	run_in,
+)
 
 
 def test_net03_users_cannot_reach_payroll_db():

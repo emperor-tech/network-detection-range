@@ -49,9 +49,8 @@ topology:
       exec: ["ip address add 10.61.60.10/28 dev eth1", "ip route replace default via 10.61.60.1 dev eth1"]
     guest:
       kind: linux
-      image: alpine:3.20
+      image: nicolaka/netshoot:latest 
       exec:
-        - "sh -c 'for i in 1 2 3; do apk add --no-cache hping3 && break; sleep 5; done'"
         - "ip address add 10.61.70.10/24 dev eth1"
         - "ip route replace default via 10.61.70.1 dev eth1"
         

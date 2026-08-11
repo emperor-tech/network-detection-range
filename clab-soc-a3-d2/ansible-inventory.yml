@@ -8,22 +8,22 @@ all:
     linux:
       hosts:
         clab-soc-a3-d2-core:
-          ansible_host: 172.20.20.2
-        clab-soc-a3-d2-dmz:
-          ansible_host: 172.20.20.5
-        clab-soc-a3-d2-engineering:
           ansible_host: 172.20.20.6
-        clab-soc-a3-d2-finance:
+        clab-soc-a3-d2-dmz:
           ansible_host: 172.20.20.9
-        clab-soc-a3-d2-gateway:
-          ansible_host: 172.20.20.8
-        clab-soc-a3-d2-guest:
-          ansible_host: 172.20.20.3
-        clab-soc-a3-d2-management:
-          ansible_host: 172.20.20.7
-        clab-soc-a3-d2-sensor:
-          ansible_host: 172.20.20.10
-        clab-soc-a3-d2-servers:
+        clab-soc-a3-d2-engineering:
           ansible_host: 172.20.20.11
-        clab-soc-a3-d2-users:
+        clab-soc-a3-d2-finance:
+          ansible_host: 172.20.20.8
+        clab-soc-a3-d2-gateway:
+          ansible_host: 172.20.20.10
+        clab-soc-a3-d2-guest:
+          ansible_host: 172.20.20.2
+        clab-soc-a3-d2-management:
           ansible_host: 172.20.20.4
+        clab-soc-a3-d2-sensor:
+          ansible_host: 172.20.20.5
+        clab-soc-a3-d2-servers:
+          ansible_host: 172.20.20.3
+        clab-soc-a3-d2-users:
+          ansible_host: 172.20.20.7

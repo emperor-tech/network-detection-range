@@ -21,3 +21,13 @@ def test_net03_users_cannot_reach_payroll_db():
         protocol="tcp",
         rule_identifier="NF_SEGMENT_DENY",
     )
+
+def test_net16_finance_can_reach_payroll_db():
+    """NET-16: finance -> servers, tcp/5432 (payroll db). Expected: allow."""
+    assert_traffic_hits_rule(
+	source_container="clab-soc-a3-d2-finance",
+	dest_ip="10.61.50.10",
+	dest_port=5432,
+	protocol="tcp",
+	rule_identifier="finance-to-payroll",
+	)

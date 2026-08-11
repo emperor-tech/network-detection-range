@@ -60,10 +60,14 @@ def send_spoofed_packet(source_container, spoofed_source_ip, dest_ip, dest_port,
     """Craft one packet with a forged source IP using nping (raw sockets) --
     plain `nc` always sends from the container's real address and can't do this."""
     proto_flag = "--udp" if protocol == "udp" else "--tcp"
-    run_in(source_container, [
+    result = run_in(source_container, [
         "nping", proto_flag, "-p", str(dest_port),
         "--source-ip", spoofed_source_ip, "-c", "1", dest_ip,
     ], timeout=8)
+    assert result.returncode == 0, (
+	f"nping failed to run inside {source_container} (exit code {result.returncode}). "
+	f"stderr: {result.stderr.strip()}"
+    )
 
 
 def count_suricata_alerts(sid, log_path="pcaps/suricata/eve.json"):

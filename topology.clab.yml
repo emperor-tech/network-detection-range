@@ -51,9 +51,10 @@ topology:
       kind: linux
       image: alpine:3.20
       exec:
+        - "sh -c 'for i in 1 2 3; do apk add --no-cache nmap && break; sleep 5; done'"
         - "ip address add 10.61.70.10/24 dev eth1"
         - "ip route replace default via 10.61.70.1 dev eth1"
-        - "sh -c 'for i in 1 2 3; do apk add --no-cache nmap && break; sleep 5; done'"
+        
   links:
     - endpoints: ["core:eth1", "gateway:eth1"]
     - endpoints: ["gateway:eth2", "management:eth1"]

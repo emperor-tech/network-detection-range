@@ -20,7 +20,7 @@ def get_rule_counter(rule_identifier):
     line — either its `comment` (e.g. "finance-to-payroll") or its log
     prefix (e.g. "NF_SEGMENT_DENY").
     """
-    result = run_in(GATEWAY, ["nft", "list", "chain", "inet", "segmentation", "forward"])
+    result = run_in(GATEWAY, ["nft", "list", "table", "inet", "segmentation"])
     for line in result.stdout.splitlines():
         if rule_identifier in line:
             match = re.search(r"packets (\d+) bytes (\d+)", line)

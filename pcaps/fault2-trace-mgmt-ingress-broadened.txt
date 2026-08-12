@@ -1,0 +1,3 @@
+trace id 6c72749e inet segmentation forward packet: iif "eth5" oif "eth3" ether saddr aa:c1:ab:d5:6d:11 ether daddr aa:c1:ab:dc:2c:17 ip saddr 10.61.40.10 ip daddr 10.61.20.10 ip dscp cs0 ip ecn not-ect ip ttl 63 ip id 47778 ip protocol tcp ip length 60 tcp sport 38357 tcp dport 22 tcp flags == syn tcp window 56760 
+trace id 6c72749e inet segmentation forward rule ip saddr 10.61.40.10 ip daddr 10.61.20.10 meta nftrace set 1 (verdict continue)
+trace id 6c72749e inet segmentation forward rule iifname { "eth2", "eth5" } oifname "eth3" tcp dport 22 counter packets 0 bytes 0 accept comment "FAULT-2-mgmt-ingress-broadened" (verdict accept)

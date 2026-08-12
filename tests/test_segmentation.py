@@ -222,3 +222,17 @@ def test_d1_finance_established_return_blocked():
         "Expected finance's return traffic to be caught by the injected fault "
         "rule, but the counter didn't move -- the fault may not be working as intended."
     )
+
+def test_fault2_users_should_not_reach_finance_admin():
+    """FAULT 2 evidence: users (untrusted) should NEVER be able to reach
+    finance's admin SSH path -- only management is the declared source.
+    If this passes while the fault is present, that PROVES the vulnerability:
+    an unauthorized zone is matching the broadened admin rule."""
+    before = get_rule_counter("FAULT-2-mgmt-ingress-broadened")
+    run_in("clab-soc-a3-d2-users", ["nc", "-zv", "-w3", "10.61.20.10", "22"], timeout=6)
+    time.sleep(0.5)
+    after = get_rule_counter("FAULT-2-mgmt-ingress-broadened")
+    assert after > before, (
+        "Expected users' traffic to hit the broadened admin rule, proving "
+        "the fault is live. If this fails, the fault may not be injected correctly."
+    )

@@ -205,3 +205,19 @@ def test_net30_sensor_has_no_routable_address():
         "let it participate in routed traffic, breaking the passive-only "
         "guarantee the brief requires."
     )
+
+
+def test_d1_finance_established_return_blocked():
+    """FAULT D1 evidence: finance's established/related return traffic should
+    now hit the injected drop rule instead of the general stateful-return rule.
+    Uses the already-allowed finance-to-payroll path: the SYN gets through and
+    the server (nothing listening) replies with a TCP RST -- that RST is the
+    'established' reply traffic this fault targets."""
+    before = get_rule_counter("FAULT-D1-finance-return-broken")
+    run_in("clab-soc-a3-d2-finance", ["nc", "-zv", "-w3", "10.61.50.10", "443"], timeout=6)
+    time.sleep(0.5)
+    after = get_rule_counter("FAULT-D1-finance-return-broken")
+    assert after > before, (
+        "Expected finance's return traffic to be caught by the injected fault "
+        "rule, but the counter didn't move -- the fault may not be working as intended."
+    )

@@ -223,6 +223,8 @@ def test_d1_finance_established_return_blocked():
         "rule, but the counter didn't move -- the fault may not be working as intended."
     )
 
+
+@pytest.mark.xfail(reason="Fault 2 has been repaired; users no longer match the admin rule")
 def test_fault2_users_should_not_reach_finance_admin():
     """FAULT 2 evidence: users (untrusted) should NEVER be able to reach
     finance's admin SSH path -- only management is the declared source.

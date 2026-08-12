@@ -1,0 +1,12 @@
+trace id 4d0911bb inet segmentation forward packet: iif "eth6" oif "eth3" ether saddr aa:c1:ab:61:ae:29 ether daddr aa:c1:ab:ad:9b:a2 ip saddr 10.61.50.10 ip daddr 10.61.20.10 ip dscp cs0 ip ecn not-ect ip ttl 63 ip id 0 ip protocol tcp ip length 40 tcp sport 443 tcp dport 37809 tcp flags == 0x14 tcp window 0 
+trace id 4d0911bb inet segmentation forward rule ip saddr 10.61.50.10 ip daddr 10.61.20.10 meta nftrace set 1 (verdict continue)
+trace id 4d0911bb inet segmentation forward rule ip saddr 10.61.50.10 ip daddr 10.61.20.10 meta nftrace set 1 (verdict continue)
+trace id 4d0911bb inet segmentation forward rule oifname "eth3" ct state established,related counter packets 9 bytes 360 drop comment "FAULT-D1-finance-return-broken" (verdict drop)
+trace id a6db3ba8 inet segmentation forward packet: iif "eth6" oif "eth3" ether saddr aa:c1:ab:61:ae:29 ether daddr aa:c1:ab:ad:9b:a2 ip saddr 10.61.50.10 ip daddr 10.61.20.10 ip dscp cs0 ip ecn not-ect ip ttl 63 ip id 0 ip protocol tcp ip length 40 tcp sport 443 tcp dport 37809 tcp flags == 0x14 tcp window 0 
+trace id a6db3ba8 inet segmentation forward rule ip saddr 10.61.50.10 ip daddr 10.61.20.10 meta nftrace set 1 (verdict continue)
+trace id a6db3ba8 inet segmentation forward rule ip saddr 10.61.50.10 ip daddr 10.61.20.10 meta nftrace set 1 (verdict continue)
+trace id a6db3ba8 inet segmentation forward rule oifname "eth3" ct state established,related counter packets 9 bytes 360 drop comment "FAULT-D1-finance-return-broken" (verdict drop)
+trace id 8d1d74a2 inet segmentation forward packet: iif "eth6" oif "eth3" ether saddr aa:c1:ab:61:ae:29 ether daddr aa:c1:ab:ad:9b:a2 ip saddr 10.61.50.10 ip daddr 10.61.20.10 ip dscp cs0 ip ecn not-ect ip ttl 63 ip id 0 ip protocol tcp ip length 40 tcp sport 443 tcp dport 37809 tcp flags == 0x14 tcp window 0 
+trace id 8d1d74a2 inet segmentation forward rule ip saddr 10.61.50.10 ip daddr 10.61.20.10 meta nftrace set 1 (verdict continue)
+trace id 8d1d74a2 inet segmentation forward rule ip saddr 10.61.50.10 ip daddr 10.61.20.10 meta nftrace set 1 (verdict continue)
+trace id 8d1d74a2 inet segmentation forward rule oifname "eth3" ct state established,related counter packets 9 bytes 360 drop comment "FAULT-D1-finance-return-broken" (verdict drop)

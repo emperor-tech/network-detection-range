@@ -85,3 +85,21 @@ def count_suricata_alerts(sid, log_path="pcaps/suricata/eve.json"):
             if event.get("event_type") == "alert" and event.get("alert", {}).get("signature_id") == sid:
                 count += 1
     return count
+
+def count_suricata_flows(src_ip, dest_ip, log_path="pcaps/suricata/eve.json"):
+    """Count flow events Suricata logged between two specific hosts.
+    Used to prove the sensor either did or did not see a given conversation."""
+    if not os.path.exists(log_path):
+        return 0
+    count = 0
+    with open(log_path) as f:
+        for line in f:
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if (event.get("event_type") == "flow"
+                    and event.get("src_ip") == src_ip
+                    and event.get("dest_ip") == dest_ip):
+                count += 1
+    return count

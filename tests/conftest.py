@@ -3,7 +3,7 @@ import subprocess
 import time
 import json
 import os
-
+from datetime import datetime, timezone
 GATEWAY = "clab-soc-a3-d2-gateway"
 
 
@@ -86,11 +86,16 @@ def count_suricata_alerts(sid, log_path="pcaps/suricata/eve.json"):
                 count += 1
     return count
 
-def count_suricata_flows(src_ip, dest_ip, log_path="pcaps/suricata/eve.json"):
-    """Count flow events Suricata logged between two specific hosts.
-    Used to prove the sensor either did or did not see a given conversation."""
+def count_suricata_flows(src_ip, dest_ip, since=None, log_path="pcaps/suricata/eve.json"):
     if not os.path.exists(log_path):
         return 0
+
+    since_dt = None
+    if since:
+        since_dt = datetime.fromisoformat(since.replace("Z", "+00:00"))
+        if since_dt.tzinfo is None:
+            since_dt = since_dt.replace(tzinfo=timezone.utc)
+
     count = 0
     with open(log_path) as f:
         for line in f:
@@ -98,8 +103,19 @@ def count_suricata_flows(src_ip, dest_ip, log_path="pcaps/suricata/eve.json"):
                 event = json.loads(line)
             except json.JSONDecodeError:
                 continue
-            if (event.get("event_type") == "flow"
-                    and event.get("src_ip") == src_ip
-                    and event.get("dest_ip") == dest_ip):
-                count += 1
+            if event.get("event_type") != "flow":
+                continue
+            if event.get("src_ip") != src_ip or event.get("dest_ip") != dest_ip:
+                continue
+            if since_dt:
+                ts_str = event.get("timestamp", "")
+                try:
+                    event_dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+                    if event_dt.tzinfo is None:
+                        event_dt = event_dt.replace(tzinfo=timezone.utc)
+                except ValueError:
+                    continue
+                if event_dt < since_dt:
+                    continue
+            count += 1
     return count

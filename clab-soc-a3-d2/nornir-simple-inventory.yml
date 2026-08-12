@@ -3,7 +3,7 @@ core:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.10
+    hostname: 172.20.20.9
 dmz:
     username: 
     password: 
@@ -13,7 +13,7 @@ engineering:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.7
+    hostname: 172.20.20.10
 finance:
     username: 
     password: 
@@ -23,12 +23,12 @@ gateway:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.3
+    hostname: 172.20.20.2
 guest:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.8
+    hostname: 172.20.20.3
 management:
     username: 
     password: 
@@ -38,7 +38,7 @@ sensor:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.9
+    hostname: 172.20.20.7
 servers:
     username: 
     password: 
@@ -48,4 +48,4 @@ users:
     username: 
     password: 
     platform: linux
-    hostname: 172.20.20.2
+    hostname: 172.20.20.8

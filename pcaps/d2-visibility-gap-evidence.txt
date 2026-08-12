@@ -1,5 +1,6 @@
-=== D2 visibility gap evidence (Wed Aug 12 09:50:50 PM UTC 2026) ===
+=== D2 visibility gap evidence, corrected (Wed Aug 12 10:14:41 PM UTC 2026) ===
+Marker timestamp: 2026-08-12T22:10:41Z
 --- Firewall counter (dmz-to-db) ---
-		iifname "eth7" oifname "eth6" tcp dport 5432 counter packets 1 bytes 60 accept comment "dmz-to-db"
---- Suricata flow events for dmz(10.61.60.10) -> servers(10.61.50.10) ---
-Count: 30 (expected 0 while fault is present)
+		iifname "eth7" oifname "eth6" tcp dport 5432 counter packets 2 bytes 120 accept comment "dmz-to-db"
+--- Suricata NEW flow events since marker (dmz -> servers) ---
+Count: 0 (expected 0 while fault is present)

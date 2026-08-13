@@ -23,7 +23,7 @@ ip route replace default via 10.61.254.1 dev eth1
 
 ip link set eth9 promisc on
 
-for interface in eth1 eth2 eth3 eth4 eth5 eth6 eth8; do
+for interface in eth1 eth2 eth3 eth4 eth5 eth6 eth7 eth8; do
   tc qdisc add dev "$interface" clsact
   tc filter add dev "$interface" ingress matchall action mirred egress mirror dev eth9
 done

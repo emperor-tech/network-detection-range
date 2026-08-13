@@ -119,3 +119,16 @@ def count_suricata_flows(src_ip, dest_ip, since=None, log_path="pcaps/suricata/e
                     continue
             count += 1
     return count
+
+def wait_for_new_flow(src_ip, dest_ip, since, max_wait=30, poll_interval=2):
+    """Poll count_suricata_flows repeatedly until a new flow appears or
+    max_wait seconds pass. More reliable than a fixed sleep, since Suricata's
+    flow-flush timing varies (observed 9-13s for a single SYN/RST exchange)."""
+    elapsed = 0
+    while elapsed < max_wait:
+        count = count_suricata_flows(src_ip, dest_ip, since=since)
+        if count > 0:
+            return count
+        time.sleep(poll_interval)
+        elapsed += poll_interval
+    return count_suricata_flows(src_ip, dest_ip, since=since)

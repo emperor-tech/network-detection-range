@@ -6,6 +6,7 @@ from conftest import (
 	send_spoofed_packet, 
 	count_suricata_alerts, 
 	run_in,
+	wait_for_new_flow,
 )
 
 
@@ -177,8 +178,6 @@ def test_net08_users_cannot_reach_gateway_ssh():
     assert_traffic_hits_rule("clab-soc-a3-d2-users", "10.61.40.1", 22, "tcp", "NF_INPUT_DENY")
 
 
-
-
 def test_net28_guest_spoofed_source_detected():
     """NET-28: guest forges a management-range source IP toward management, DNS/udp 53.
     Expected: both the firewall drop AND a Suricata alert fire."""
@@ -238,3 +237,12 @@ def test_fault2_users_should_not_reach_finance_admin():
         "Expected users' traffic to hit the broadened admin rule, proving "
         "the fault is live. If this fails, the fault may not be injected correctly."
     )
+
+def test_d2_dmz_visibility_restored():
+    """D2 repair evidence: dmz->servers traffic generated AFTER this test starts
+    must appear in Suricata's flow log. Polls up to 30s since flow-flush timing
+    varies, rather than assuming a fixed delay."""
+    since = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    run_in("clab-soc-a3-d2-dmz", ["nc", "-zv", "-w3", "10.61.50.10", "5432"], timeout=6)
+    count = wait_for_new_flow("10.61.60.10", "10.61.50.10", since=since)
+    assert count > 0, "Expected at least one NEW Suricata flow event for dmz->servers after D2 repair (waited 30s)"

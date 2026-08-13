@@ -4,3 +4,7 @@ Marker timestamp: 2026-08-12T22:10:41Z
 		iifname "eth7" oifname "eth6" tcp dport 5432 counter packets 2 bytes 120 accept comment "dmz-to-db"
 --- Suricata NEW flow events since marker (dmz -> servers) ---
 Count: 0 (expected 0 while fault is present)
+=== D2 repair confirmed (Thu Aug 13 10:12:40 AM UTC 2026) ===
+Marker timestamp: 2026-08-13T10:11:50Z
+Note: Suricata flow-flush observed at ~9-13s for a single SYN/RST exchange; polling used instead of fixed sleep
+		iifname "eth7" oifname "eth6" tcp dport 5432 counter packets 7 bytes 420 accept comment "dmz-to-db"

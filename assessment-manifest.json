@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "project_id": "UBI-2026-0564",
+  "variant": "D2",
+  "candidate_binding": "UBI-2026-0564",
+  "assigned_pack": {
+    "file_name": "soc-analysis-stage-7-shared-b1.tar.gz",
+    "sha256": "33281c8381cf7a7744f76e016d7b3cb3957f491422a8987dd7d483890009e1fd",
+    "manifest_signature": "55d085fcbcf30f8af27edfa910df2208f9efe6645bbeda6155591143b92e8701",
+    "verified_before_use": true
+  },
+  "commit": "b5ccc913212f25edd5dc5805f75162095767bab4",
+  "supported_environment": {
+    "os": "Linux Ubuntu (see uname -a in setup evidence)",
+    "cpu": "See host specifications",
+    "memory_gb": 8,
+    "tool_versions": {
+      "docker": "29.7.2",
+      "containerlab": "0.77.0",
+      "python": "3.14.4",
+      "pytest": "9.1.1",
+      "pytest-testinfra": "10.2.2"
+    }
+  },
+  "commands": {
+    "provision": "make configure",
+    "build": "make lab",
+    "test": "make test",
+    "clean": "make clean"
+  },
+  "results": {
+    "public_tests": {
+      "passed": 33,
+      "failed": 0,
+      "report": "test-results.xml"
+    },
+    "runtime_seconds": "SEE test-results.xml <testsuite time= attribute>",
+    "peak_memory_mb": null,
+    "output_hashes": {
+      "test-results.xml": "COMPUTED_BELOW_IN_STEP_3"
+    }
+  },
+  "inputs": [
+    "address-plan.csv",
+    "control-test-matrix.csv",
+    "public-fixtures.json",
+    "brief.md"
+  ],
+  "outputs": [
+    "test-results.xml",
+    "pcaps/",
+    "evidence-index.csv",
+    "fault-recovery-log.md"
+  ],
+  "manual_preconditions": [
+    "Host must have Docker and containerlab installed per README.md tool versions.",
+    "VM clock should be synced (NTP) before running - clock drift affected Suricata flow-timestamp evidence during Phase 4 and was resolved; see decision log / fault-recovery-log for details."
+  ],
+  "known_limitations": [
+    "services/ contains minimal stub listeners (nc loops), not full application implementations - sufficient to prove firewall/routing behavior, not application-layer correctness.",
+    "Suricata flow-log flush timing observed at 9-13 seconds for a single SYN/RST exchange; tests use polling (up to 30s) rather than a fixed sleep to account for this."
+  ]
+}

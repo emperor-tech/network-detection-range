@@ -1,9 +1,12 @@
-.PHONY: lab clean test destroy collect baseline
+.PHONY: configure lab baseline clean test destroy collect
 
-lab:
+configure:
+	bash scripts/render-config.sh
+
+lab: configure
 	containerlab deploy --topo topology.clab.yml
 
-baseline:
+baseline: configure
 	docker exec clab-soc-a3-d2-gateway nft -f /etc/nftables.conf
 
 destroy:
@@ -15,5 +18,5 @@ clean: destroy
 collect:
 	bash scripts/collect-state.sh
 
-test:
+test: configure
 	pytest tests/ --junitxml=test-results.xml

@@ -1,0 +1,134 @@
+import re
+import subprocess
+import time
+import json
+import os
+from datetime import datetime, timezone
+GATEWAY = "clab-soc-a3-d2-gateway"
+
+
+def run_in(container, cmd, timeout=10):
+    """Run a shell command inside a running container via `docker exec`."""
+    return subprocess.run(
+        ["docker", "exec", container] + cmd,
+        capture_output=True, text=True, timeout=timeout,
+    )
+
+
+def get_rule_counter(rule_identifier):
+    """
+    Read the current packet counter for one nftables rule on the gateway.
+    `rule_identifier` is any unique substring that appears on that rule's
+    line — either its `comment` (e.g. "finance-to-payroll") or its log
+    prefix (e.g. "NF_SEGMENT_DENY").
+    """
+    result = run_in(GATEWAY, ["nft", "list", "table", "inet", "segmentation"])
+    for line in result.stdout.splitlines():
+        if rule_identifier in line:
+            match = re.search(r"packets (\d+) bytes (\d+)", line)
+            if match:
+                return int(match.group(1))
+    raise ValueError(f"No rule line found containing '{rule_identifier}'")
+
+
+def assert_traffic_hits_rule(source_container, dest_ip, dest_port, protocol, rule_identifier):
+    """
+    Send one connection attempt from source_container to dest_ip:dest_port,
+    then confirm the gateway's counter for rule_identifier increased.
+    This proves which exact rule handled the flow, whether it accepted or
+    dropped it -- not just "did the app work."
+    """
+    before = get_rule_counter(rule_identifier)
+
+    if protocol == "tcp":
+        run_in(source_container, ["nc", "-zv", "-w3", dest_ip, str(dest_port)], timeout=6)
+    elif protocol == "udp":
+        run_in(source_container, ["nc", "-zvu", "-w3", dest_ip, str(dest_port)], timeout=6)
+    else:
+        raise ValueError(f"Unsupported protocol: {protocol}")
+
+    time.sleep(0.5)  # give nftables a moment to update the counter
+    after = get_rule_counter(rule_identifier)
+
+    assert after > before, (
+        f"Expected '{rule_identifier}' packet counter to increase "
+        f"(before={before}, after={after}) for "
+        f"{source_container} -> {dest_ip}:{dest_port}/{protocol}"
+    )
+
+def send_spoofed_packet(source_container, spoofed_source_ip, dest_ip, dest_port, protocol="udp"):
+    """Craft one packet with a forged source IP using nping (raw sockets) --
+    plain `nc` always sends from the container's real address and can't do this."""
+    proto_flag = "--udp" if protocol == "udp" else "--tcp"
+    result = run_in(source_container, [
+        "nping", proto_flag, "-p", str(dest_port),
+        "--source-ip", spoofed_source_ip, "-c", "1", dest_ip,
+    ], timeout=8)
+    assert result.returncode == 0, (
+	f"nping failed to run inside {source_container} (exit code {result.returncode}). "
+	f"stderr: {result.stderr.strip()}"
+    )
+
+
+def count_suricata_alerts(sid, log_path="pcaps/suricata/eve.json"):
+    """Count how many times a given Suricata signature ID has fired,
+    by reading the mirrored eve.json evidence file directly."""
+    if not os.path.exists(log_path):
+        return 0
+    count = 0
+    with open(log_path) as f:
+        for line in f:
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if event.get("event_type") == "alert" and event.get("alert", {}).get("signature_id") == sid:
+                count += 1
+    return count
+
+def count_suricata_flows(src_ip, dest_ip, since=None, log_path="pcaps/suricata/eve.json"):
+    if not os.path.exists(log_path):
+        return 0
+
+    since_dt = None
+    if since:
+        since_dt = datetime.fromisoformat(since.replace("Z", "+00:00"))
+        if since_dt.tzinfo is None:
+            since_dt = since_dt.replace(tzinfo=timezone.utc)
+
+    count = 0
+    with open(log_path) as f:
+        for line in f:
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if event.get("event_type") != "flow":
+                continue
+            if event.get("src_ip") != src_ip or event.get("dest_ip") != dest_ip:
+                continue
+            if since_dt:
+                ts_str = event.get("timestamp", "")
+                try:
+                    event_dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+                    if event_dt.tzinfo is None:
+                        event_dt = event_dt.replace(tzinfo=timezone.utc)
+                except ValueError:
+                    continue
+                if event_dt < since_dt:
+                    continue
+            count += 1
+    return count
+
+def wait_for_new_flow(src_ip, dest_ip, since, max_wait=30, poll_interval=2):
+    """Poll count_suricata_flows repeatedly until a new flow appears or
+    max_wait seconds pass. More reliable than a fixed sleep, since Suricata's
+    flow-flush timing varies (observed 9-13s for a single SYN/RST exchange)."""
+    elapsed = 0
+    while elapsed < max_wait:
+        count = count_suricata_flows(src_ip, dest_ip, since=since)
+        if count > 0:
+            return count
+        time.sleep(poll_interval)
+        elapsed += poll_interval
+    return count_suricata_flows(src_ip, dest_ip, since=since)

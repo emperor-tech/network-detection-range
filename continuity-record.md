@@ -2,8 +2,7 @@
 
 ## 1. Previous-stage commit and component reused
 No code or data component from Stage 5 (commit a08c2f3870003880b47d90d1f85285542f1c9e1a) or
-Stage 6 (repo: emperor-tech/honeypot-project — final commit hash not re-verified here; the
-recorded 1a4944c... predates a late manifest regeneration per Stage 6's own notes) was directly
+Stage 6 (commit 1a4944c77ed34696da4bcdaa79283b248e427aa8) was directly
 reused in this stage. This was checked deliberately against both prior projects' actual
 components rather than assumed.
 

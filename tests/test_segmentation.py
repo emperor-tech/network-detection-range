@@ -1,6 +1,6 @@
 import time
 import pytest
-import datetime
+from datetime import datetime, timezone
 from conftest import (
 	assert_traffic_hits_rule,
 	get_rule_counter, 

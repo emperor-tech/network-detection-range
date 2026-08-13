@@ -8,3 +8,7 @@ Count: 0 (expected 0 while fault is present)
 Marker timestamp: 2026-08-13T10:11:50Z
 Note: Suricata flow-flush observed at ~9-13s for a single SYN/RST exchange; polling used instead of fixed sleep
 		iifname "eth7" oifname "eth6" tcp dport 5432 counter packets 7 bytes 420 accept comment "dmz-to-db"
+=== D2 repair confirmed (Thu Aug 13 10:15:49 AM UTC 2026) ===
+Marker timestamp: 2026-08-13T10:11:50Z
+Note: Suricata flow-flush observed at ~9-13s for a single SYN/RST exchange; polling used instead of fixed sleep
+		iifname "eth7" oifname "eth6" tcp dport 5432 counter packets 8 bytes 480 accept comment "dmz-to-db"

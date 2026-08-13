@@ -11,6 +11,7 @@ render configs/core/frr.conf
 render configs/gateway/bootstrap.sh
 render configs/gateway/nftables.conf
 render detections/rules/suricata.yaml
+render detections/rules/suricata.rules
 render tests/conftest.py
 render tests/test_segmentation.py
 

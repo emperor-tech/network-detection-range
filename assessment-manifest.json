@@ -37,7 +37,7 @@
     "runtime_seconds": "SEE test-results.xml <testsuite time= attribute>",
     "peak_memory_mb": null,
     "output_hashes": {
-      "test-results.xml": "COMPUTED_BELOW_IN_STEP_3"
+      "test-results.xml": "90b042b97b3947f72206357a3a7a4be8d31088735a290ef369762800175ecf78"
     }
   },
   "inputs": [
